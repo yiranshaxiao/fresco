@@ -42,6 +42,7 @@ import com.facebook.common.internal.VisibleForTesting;
 import com.facebook.common.logging.FLog;
 import com.facebook.samples.comparison.adapters.AQueryAdapter;
 import com.facebook.samples.comparison.adapters.FrescoAdapter;
+import com.facebook.samples.comparison.adapters.FrescoAdapterV2;
 import com.facebook.samples.comparison.adapters.GlideAdapter;
 import com.facebook.samples.comparison.adapters.ImageListAdapter;
 import com.facebook.samples.comparison.adapters.PicassoAdapter;
@@ -54,6 +55,7 @@ import com.facebook.samples.comparison.urlsfetcher.ImageFormat;
 import com.facebook.samples.comparison.urlsfetcher.ImageSize;
 import com.facebook.samples.comparison.urlsfetcher.ImageUrlsFetcher;
 import com.facebook.samples.comparison.urlsfetcher.ImageUrlsRequestBuilder;
+import com.facebook.samples.comparison.viewhelper.RecyclerViewHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
   public static final int VOLLEY_INDEX = 6;
   public static final int AQUERY_INDEX = 7;
 
+  public static final int FRESCO_OKHTTP_INDEX_OPT = 8;
   // These need to be in sync with {@link R.array.image_sources}
   public static final int NONE_INDEX = 0;
   public static final int NETWORK_INDEX = 1;
@@ -118,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
     mRecyclerView = (RecyclerView) findViewById(R.id.image_grid);
     mRecyclerView.setLayoutManager(new GridLayoutManager(this, COLS_NUMBER));
+    new RecyclerViewHelper().with(mRecyclerView);
 
     FLog.setMinimumLoggingLevel(FLog.WARN);
     Drawables.init(getResources());
@@ -297,6 +301,12 @@ public class MainActivity extends AppCompatActivity {
             index == FRESCO_INDEX ?
                 ImagePipelineConfigFactory.getImagePipelineConfig(this) :
                 ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(this));
+        break;
+      case FRESCO_OKHTTP_INDEX_OPT:
+        mCurrentAdapter = new FrescoAdapterV2(
+            this,
+            mPerfListener,
+            ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(this));
         break;
       case GLIDE_INDEX:
         mCurrentAdapter = new GlideAdapter(this, mPerfListener);
