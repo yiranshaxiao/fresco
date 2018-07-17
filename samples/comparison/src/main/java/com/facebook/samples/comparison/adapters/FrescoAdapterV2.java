@@ -33,7 +33,7 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.samples.comparison.Drawables;
 import com.facebook.samples.comparison.configs.imagepipeline.IdlePipelineDraweeController;
 import com.facebook.samples.comparison.holders.FrescoHolderV2;
-import com.facebook.samples.comparison.instrumentation.InstrumentedDraweeView;
+import com.facebook.samples.comparison.instrumentation.InstrumentedDraweeViewV2;
 import com.facebook.samples.comparison.instrumentation.PerfListener;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
@@ -80,7 +80,7 @@ public class FrescoAdapterV2 extends ImageListAdapter {
         .setProgressBarImage(new ProgressBarDrawable())
         .setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER)
         .build();
-    final InstrumentedDraweeView instrView = new InstrumentedDraweeView(getContext(), gdh);
+    final InstrumentedDraweeViewV2 instrView = new InstrumentedDraweeViewV2(getContext(), gdh);
 
     return new FrescoHolderV2(getContext(), parent, instrView, getPerfListener());
   }

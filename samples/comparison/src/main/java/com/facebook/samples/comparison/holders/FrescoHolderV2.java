@@ -20,21 +20,21 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.samples.comparison.instrumentation.InstrumentedDraweeView;
+import com.facebook.samples.comparison.instrumentation.InstrumentedDraweeViewV2;
 import com.facebook.samples.comparison.instrumentation.PerfListener;
 import com.facebook.samples.comparison.viewhelper.RecyclerViewHelper;
 
 /**
  * This is the Holder class for the RecycleView to use with Fresco
  */
-public class FrescoHolderV2 extends BaseViewHolder<InstrumentedDraweeView> implements
+public class FrescoHolderV2 extends BaseViewHolder<InstrumentedDraweeViewV2> implements
     RecyclerViewHelper.IdleListener {
 
   private String mUriString;
 
   public FrescoHolderV2(
       Context context, View parentView,
-      InstrumentedDraweeView intrumentedDraweeView, PerfListener perfListener) {
+      InstrumentedDraweeViewV2 intrumentedDraweeView, PerfListener perfListener) {
     super(context, parentView, intrumentedDraweeView, perfListener);
   }
 
