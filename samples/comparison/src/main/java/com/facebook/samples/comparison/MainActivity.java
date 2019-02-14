@@ -55,16 +55,14 @@ import com.facebook.samples.comparison.urlsfetcher.ImageFormat;
 import com.facebook.samples.comparison.urlsfetcher.ImageSize;
 import com.facebook.samples.comparison.urlsfetcher.ImageUrlsFetcher;
 import com.facebook.samples.comparison.urlsfetcher.ImageUrlsRequestBuilder;
+import com.facebook.samples.comparison.urlsfetcher.Urls;
 import com.facebook.samples.comparison.viewhelper.RecyclerViewHelper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-  private static final String TAG = "FrescoSample";
-
-  private static final int PERMISSION_REQUEST_CODE = 42;
 
   // These need to be in sync with {@link R.array.image_loaders}
   public static final int FRESCO_INDEX = 1;
@@ -74,46 +72,62 @@ public class MainActivity extends AppCompatActivity {
   public static final int UIL_INDEX = 5;
   public static final int VOLLEY_INDEX = 6;
   public static final int AQUERY_INDEX = 7;
-
   public static final int FRESCO_OKHTTP_INDEX_OPT = 8;
   // These need to be in sync with {@link R.array.image_sources}
   public static final int NONE_INDEX = 0;
   public static final int NETWORK_INDEX = 1;
   public static final int LOCAL_INDEX = 2;
 
+  private static final String TAG = "FrescoSample";
+  private static final int PERMISSION_REQUEST_CODE = 42;
   private static final int COLS_NUMBER = 3;
-
   private static final long STATS_CLOCK_INTERVAL_MS = 1000;
   private static final int DEFAULT_MESSAGE_SIZE = 1024;
   private static final int BYTES_IN_MEGABYTE = 1024 * 1024;
-
   private static final String EXTRA_ALLOW_ANIMATIONS = "allow_animations";
   private static final String EXTRA_USE_DRAWEE = "use_drawee";
   private static final String EXTRA_CURRENT_ADAPTER_INDEX = "current_adapter_index";
   private static final String EXTRA_CURRENT_SOURCE_ADAPTER_INDEX = "current_source_adapter_index";
-
   private Handler mHandler;
   private Runnable mStatsClockTickRunnable;
-
   private TextView mStatsDisplay;
   private Spinner mLoaderSelect;
   private Spinner mSourceSelect;
-
   private boolean mHasStoragePermissions;
   private boolean mRequestedLocalSource;
   private boolean mUseDrawee;
   private boolean mAllowAnimations;
   private int mCurrentLoaderAdapterIndex;
   private int mCurrentSourceAdapterIndex;
-
   private ImageListAdapter mCurrentAdapter;
   private RecyclerView mRecyclerView;
-
   private PerfListener mPerfListener;
-
   private List<String> mImageUrls = new ArrayList<>();
-
   private boolean mUrlsLocal = false;
+
+  public static int calcDesiredSize(Context context, int parentWidth, int parentHeight) {
+    int orientation = context.getResources().getConfiguration().orientation;
+    int desiredSize = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
+        parentHeight / 2 : parentHeight / 3;
+    return Math.min(desiredSize, parentWidth);
+  }
+
+  private static void appendSize(StringBuilder sb, long bytes) {
+    String value = String.format(Locale.getDefault(), "%.1f MB", (float) bytes / BYTES_IN_MEGABYTE);
+    sb.append(value);
+  }
+
+  private static void appendTime(StringBuilder sb, String prefix, long timeMs, String suffix) {
+    appendValue(sb, prefix, timeMs + " ms", suffix);
+  }
+
+  private static void appendNumber(StringBuilder sb, String prefix, long number, String suffix) {
+    appendValue(sb, prefix, number + "", suffix);
+  }
+
+  private static void appendValue(StringBuilder sb, String prefix, String value, String suffix) {
+    sb.append(prefix).append(value).append(suffix);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -152,28 +166,28 @@ public class MainActivity extends AppCompatActivity {
     mStatsDisplay = (TextView) findViewById(R.id.stats_display);
     mLoaderSelect = (Spinner) findViewById(R.id.loader_select);
     mLoaderSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-          @Override
-          public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            setLoaderAdapter(position);
-          }
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        setLoaderAdapter(position);
+      }
 
-          @Override
-          public void onNothingSelected(AdapterView<?> parent) {
-          }
-        });
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+      }
+    });
     mLoaderSelect.setSelection(mCurrentLoaderAdapterIndex);
 
     mSourceSelect = (Spinner) findViewById(R.id.source_select);
     mSourceSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-          @Override
-          public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            setSourceAdapter(position);
-          }
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        setSourceAdapter(position);
+      }
 
-          @Override
-          public void onNothingSelected(AdapterView<?> parent) {
-          }
-        });
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) {
+      }
+    });
     mSourceSelect.setSelection(mCurrentSourceAdapterIndex);
     mHasStoragePermissions =
         ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
@@ -254,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityCompat.requestPermissions(
         this,
-        new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
         PERMISSION_REQUEST_CODE);
   }
 
@@ -336,7 +350,6 @@ public class MainActivity extends AppCompatActivity {
     updateStats();
   }
 
-
   private void setSourceAdapter(int index) {
     FLog.v(TAG, "onImageSourceSelect: %d", index);
 
@@ -379,13 +392,6 @@ public class MainActivity extends AppCompatActivity {
 
   private void cancelNextStatsClockTick() {
     mHandler.removeCallbacks(mStatsClockTickRunnable);
-  }
-
-  public static int calcDesiredSize(Context context, int parentWidth, int parentHeight) {
-    int orientation = context.getResources().getConfiguration().orientation;
-    int desiredSize = (orientation == Configuration.ORIENTATION_LANDSCAPE) ?
-        parentHeight / 2 : parentHeight / 3;
-    return Math.min(desiredSize, parentWidth);
   }
 
   private ImageSize chooseImageSize() {
@@ -463,6 +469,10 @@ public class MainActivity extends AppCompatActivity {
   private void updateAdapter(List<String> urls) {
     if (mCurrentAdapter != null) {
       mCurrentAdapter.clear();
+      if (urls == null) {
+        urls = new ArrayList<>();
+      }
+      urls.addAll(Arrays.asList(Urls.SAMPLE_URIS));
       if (urls != null) {
         for (String url : urls) {
           mCurrentAdapter.addUrl(url);
@@ -488,23 +498,6 @@ public class MainActivity extends AppCompatActivity {
     final String message = sb.toString();
     mStatsDisplay.setText(message);
     FLog.i(TAG, message);
-  }
-
-  private static void appendSize(StringBuilder sb, long bytes) {
-    String value = String.format(Locale.getDefault(), "%.1f MB", (float) bytes / BYTES_IN_MEGABYTE);
-    sb.append(value);
-  }
-
-  private static void appendTime(StringBuilder sb, String prefix, long timeMs, String suffix) {
-    appendValue(sb, prefix, timeMs + " ms", suffix);
-  }
-
-  private static void appendNumber(StringBuilder sb, String prefix, long number, String suffix) {
-    appendValue(sb, prefix, number + "", suffix);
-  }
-
-  private static void appendValue(StringBuilder sb, String prefix, String value, String suffix) {
-    sb.append(prefix).append(value).append(suffix);
   }
 
   /**

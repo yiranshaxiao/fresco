@@ -24,6 +24,8 @@ import com.facebook.samples.zoomable.ZoomableDraweeView;
 class MyPagerAdapter extends PagerAdapter {
 
   private static final String[] SAMPLE_URIS = {
+          "http://p1.pstatp.com/w281/34b70005771d72ffdd9d.webp",
+          "http://p1.pstatp.com/w576/38260000ee332effaf56.webp",
           "https://www.gstatic.com/webp/gallery/1.sm.jpg",
           "https://www.gstatic.com/webp/gallery/2.sm.jpg",
           "https://www.gstatic.com/webp/gallery/3.sm.jpg",
