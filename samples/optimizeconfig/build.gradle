@@ -1,0 +1,55 @@
+apply plugin: 'com.android.application'
+
+android {
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.facebook.samples.optimizeconfig"
+        minSdkVersion rootProject.ext.samplesMinSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "${VERSION_NAME}"
+
+        testApplicationId "com.facebook.samples.optimizeconfig.test"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+    }
+
+    flavorDimensions "main"
+
+    productFlavors {
+        internal
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+
+    lintOptions {
+        warning 'InvalidPackage'
+        abortOnError false
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a'
+            universalApk false
+        }
+    }
+}
+
+configurations {
+    internalCompile
+}
+
+dependencies {
+    implementation "androidx.legacy:legacy-support-core-ui:${versions.androidx.legacy_support_core_ui}"
+    implementation "com.squareup.okhttp3:okhttp:3.11.0"
+
+    internalImplementation project(':drawee-backends:drawee-pipeline')
+}

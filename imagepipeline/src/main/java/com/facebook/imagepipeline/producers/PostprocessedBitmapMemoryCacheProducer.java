@@ -132,6 +132,7 @@ public class PostprocessedBitmapMemoryCacheProducer
             (newCachedResult != null) ? newCachedResult : newResult, status);
       } finally {
         CloseableReference.closeSafely(newCachedResult);
+        CloseableReference.closeSafely(newResult);
       }
     }
   }

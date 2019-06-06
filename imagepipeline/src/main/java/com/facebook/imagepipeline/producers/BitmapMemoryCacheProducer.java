@@ -167,6 +167,7 @@ public class BitmapMemoryCacheProducer implements Producer<CloseableReference<Cl
                 .onNewResult((newCachedResult != null) ? newCachedResult : newResult, status);
           } finally {
             CloseableReference.closeSafely(newCachedResult);
+            CloseableReference.closeSafely(newResult);
           }
         } finally {
           if (FrescoSystrace.isTracing()) {
